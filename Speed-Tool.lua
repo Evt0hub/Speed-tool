@@ -72,4 +72,4 @@ button.MouseButton1Click:Connect(function()
             player.Character:FindFirstChildOfClass("Humanoid").WalkSpeed = DEFAULT_SPEED
         end
     end
-end)
+end
