@@ -1,28 +1,16 @@
-local tool = script.Parent
-local DEFAULT_SPEED = 16
-local BOOST_SPEED = DEFAULT_SPEED * 3
+local player = game:GetService("Players").LocalPlayer
+local TARGET_SPEED = 48
 
-local function onEquip()
-    local character = tool.Parent
-    local humanoid = character:FindFirstChildOfClass("Humanoid")
-    if humanoid then
-        humanoid.WalkSpeed = BOOST_SPEED
-        print(character.Name .. "님이 Speed 아이템을 장착하여 3배 빨라졌습니다!")
-    end
-end
+print("스피드 3배 핵 스크립트가 활성화되었습니다.")
 
-local function onUnequip()
-    local backpack = tool.Parent
-    local player = backpack.Parent
-    if player and player:FindFirstChild("Character") then
-        local character = player.Character
-        local humanoid = character:FindFirstChildOfClass("Humanoid")
-        if humanoid then
-            humanoid.WalkSpeed = DEFAULT_SPEED
-            print(character.Name .. "님의 속도가 원래대로 돌아왔습니다.")
+task.spawn(function()
+    while true do
+        task.wait(0.1)
+        if player.Character and player.Character:FindFirstChildOfClass("Humanoid") then
+            local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
+            if humanoid.WalkSpeed ~= TARGET_SPEED then
+                humanoid.WalkSpeed = TARGET_SPEED
+            end
         end
     end
-end
-
-tool.Equipped:Connect(onEquip)
-tool.Unequipped:Connect(onUnequip)
+end)
