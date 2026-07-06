@@ -1,20 +1,17 @@
 local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/xHeptc/Kavo-UI-Library/main/source.lua"))()
 
--- 창 제목을 'made by evt_all'로 설정
+-- 1. 창 생성 (창이 무조건 뜨도록 설정)
 local Window = Library.CreateLib("made by evt_all", "DarkTheme")
-
-Library:ToggleUI() 
 
 local player = game.Players.LocalPlayer
 local isSpeedOn = false
 local TARGET_SPEED = 48
 local DEFAULT_SPEED = 16
 
--- 메인 기능 탭
+-- 2. 기능 넣기
 local Tab = Window:NewTab("Main")
 local Section = Tab:NewSection("Speed Controller")
 
--- ON/OFF 스위치
 Section:NewToggle("Speed 3x (48)", "Turn speed hack on/off", function(state)
     isSpeedOn = state
     if not isSpeedOn then
@@ -24,7 +21,7 @@ Section:NewToggle("Speed 3x (48)", "Turn speed hack on/off", function(state)
     end
 end)
 
--- 속도 무한 고정 루프
+-- 3. 스피드 루프
 task.spawn(function()
     while true do
         task.wait(0.1)
@@ -38,12 +35,20 @@ task.spawn(function()
 end)
 
 ----------------------------------------------------
--- 📱 모바일 전용: 창 닫기 / 아이콘 변환 커스텀 버튼
+-- 📱 모바일 강제 노출 및 닫기 연동 최적화
 ----------------------------------------------------
 local playerGui = player:WaitForChild("PlayerGui")
-local coreGui = playerGui:FindFirstChild("Kavo") or playerGui:WaitForChild("Kavo", 5)
+local coreGui = playerGui:WaitForChild("Kavo", 10)
 
 if coreGui then
+    local mainFrame = coreGui:WaitForChild("Main", 5)
+    
+    -- 무조건 화면에 크게 보이도록 강제 시작 설정
+    if mainFrame then
+        mainFrame.Visible = true
+    end
+
+    -- 미니 번개 아이콘 미리 생성해두기
     local openButton = Instance.new("TextButton")
     openButton.Name = "MiniMenuIcon"
     openButton.Size = UDim2.new(0, 45, 0, 45) 
@@ -53,30 +58,31 @@ if coreGui then
     openButton.TextColor3 = Color3.fromRGB(255, 255, 0) 
     openButton.TextSize = 20
     openButton.BorderSizePixel = 0
+    openButton.Visible = false -- 처음엔 창이 열려있으니 숨김
     openButton.Parent = coreGui
     
     local corner = Instance.new("UICorner")
     corner.CornerRadius = UDim.new(0, 50) 
     corner.Parent = openButton
 
-    local mainFrame = coreGui:FindFirstChild("Main")
-    
-    if mainFrame then
-        openButton.Visible = false
-    end
-
+    -- 번개 누르면 창 다시 열리기
     openButton.MouseButton1Click:Connect(function()
         if mainFrame then
             mainFrame.Visible = true
-            openButton.Visible = false 
+            openButton.Visible = false
         end
     end)
 
+    -- 창의 상태를 실시간 감시해서 숨기기/보이기 전환
     task.spawn(function()
         while true do
             task.wait(0.2)
-            if mainFrame and mainFrame.Visible == false then
-                openButton.Visible = true 
+            if mainFrame then
+                if mainFrame.Visible == false then
+                    openButton.Visible = true
+                else
+                    openButton.Visible = false
+                end
             end
         end
     end)
